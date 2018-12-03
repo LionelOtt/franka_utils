@@ -28,8 +28,8 @@ target_link_libraries(noise Franka::Franka common Eigen3::Eigen3)
 #add_executable(sine_wave src/sine_wave.cpp)
 #target_link_libraries(sine_wave Franka::Franka common Eigen3::Eigen3)
 
-#add_executable(playback src/playback.cpp)
-#target_link_libraries(playback Franka::Franka common Eigen3::Eigen3)
+add_executable(playback src/playback.cpp)
+target_link_libraries(playback Franka::Franka common Eigen3::Eigen3)
 
 add_executable(record src/record.cpp)
 target_link_libraries(record Franka::Franka common Eigen3::Eigen3)

@@ -5,9 +5,10 @@
 
 
 Trajectory::Trajectory(double acceleration, double initial_position)
-    :   m_position(initial_position)
+    :   m_max_acceleration(acceleration)
+      , m_position(initial_position)
       , m_velocity(0.0)
-      , m_acceleration(acceleration)
+      , m_acceleration(0.0)
       , m_last_time(0.0)
       , m_phase(0)
       , m_direction(1)
@@ -27,14 +28,15 @@ Eigen::Vector3d Trajectory::get_posvelacc(double time_point)
     double t_corr = 0.0;
     double time_delta = time_point - m_last_time;
     m_last_time = time_point;
-    
-    double cur_acceleration = 0.0;
+
+    // 25 deg / sec max velocity
+    static const double max_vel = 0.0004;
 
     // Hold position
     double start_time = 0.0;
     if(start_time <= t_norm && t_norm < (start_time + phase_a_duration))
     {
-        cur_acceleration = 0.0;
+        m_acceleration = 0.0;
         if(m_phase == 2)
         {
             m_phase = 0;
@@ -47,7 +49,7 @@ Eigen::Vector3d Trajectory::get_posvelacc(double time_point)
     if(start_time <= t_norm && t_norm < (start_time + phase_b_duration))
     {
         t_corr = t_norm - phase_a_duration;
-        cur_acceleration = m_direction * m_acceleration;
+        m_acceleration = m_direction * m_max_acceleration;
         m_phase = 1;
     }
 
@@ -56,7 +58,7 @@ Eigen::Vector3d Trajectory::get_posvelacc(double time_point)
     if(start_time <= t_norm && t_norm < (start_time + phase_b_duration))
     {
         t_corr = t_norm - phase_a_duration - phase_b_duration;
-        cur_acceleration = -m_direction * m_acceleration;
+        m_acceleration = -m_direction * m_max_acceleration;
         m_phase = 1;
     }
         
@@ -64,12 +66,17 @@ Eigen::Vector3d Trajectory::get_posvelacc(double time_point)
     start_time += phase_b_duration;
     if(start_time <= t_norm && t_norm < (start_time + phase_c_duration))
     {
-        cur_acceleration = 0.0;
+        t_corr = t_norm - phase_a_duration - 2 * phase_b_duration;
+        m_acceleration = 0.0;
         m_phase = 2;
     }
 
     m_position += m_velocity * t_corr;
-    m_velocity += cur_acceleration * t_corr;
+    m_velocity += m_acceleration * t_corr;
+    m_velocity = std::copysign(
+            std::min(std::abs(m_velocity), max_vel),
+            m_velocity
+    );
 
-    return {m_position, m_velocity, cur_acceleration};
+    return {m_position, m_velocity, m_acceleration};
 }

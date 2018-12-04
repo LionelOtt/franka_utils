@@ -5,7 +5,7 @@
 
 int main(int argc, char const* argv[])
 {
-    auto traj = Trajectory(0.0001, 0.0);
+    auto traj = Trajectory(0.0000001, 0.0);
     std::ofstream out("/tmp/traj.csv");
 
     auto delta = 0.001;

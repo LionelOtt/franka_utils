@@ -8,6 +8,7 @@
 class Trajectory
 {
     public:
+        Trajectory() = default;
         Trajectory(double acceleration, double initial_position);
 
         Eigen::Vector3d get_posvelacc(double time_point);
@@ -20,7 +21,6 @@ class Trajectory
         double                          m_acceleration;
 
         double                          m_last_time;
-        int                             m_phase;
         int                             m_direction;
 };
 

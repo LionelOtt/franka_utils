@@ -13,7 +13,7 @@ Trajectory::Trajectory(double acceleration, double initial_position)
       , m_direction(1)
 {}
 
-double Trajectory::position_at_time(double time_point)
+Eigen::Vector3d Trajectory::get_posvelacc(double time_point)
 {
     static const double phase_a_duration = 1.0;
     static const double phase_b_duration = 2.0;
@@ -47,7 +47,7 @@ double Trajectory::position_at_time(double time_point)
     if(start_time <= t_norm && t_norm < (start_time + phase_b_duration))
     {
         t_corr = t_norm - phase_a_duration;
-        cur_acceleration = m_acceleration;
+        cur_acceleration = m_direction * m_acceleration;
         m_phase = 1;
     }
 
@@ -56,7 +56,7 @@ double Trajectory::position_at_time(double time_point)
     if(start_time <= t_norm && t_norm < (start_time + phase_b_duration))
     {
         t_corr = t_norm - phase_a_duration - phase_b_duration;
-        cur_acceleration = -m_acceleration;
+        cur_acceleration = -m_direction * m_acceleration;
         m_phase = 1;
     }
         
@@ -68,8 +68,8 @@ double Trajectory::position_at_time(double time_point)
         m_phase = 2;
     }
 
+    m_position += m_velocity * t_corr;
     m_velocity += cur_acceleration * t_corr;
-    m_position += m_direction * m_velocity * time_delta;
 
-    return m_position;
+    return {m_position, m_velocity, cur_acceleration};
 }

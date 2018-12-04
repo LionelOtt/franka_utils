@@ -11,7 +11,8 @@ int main(int argc, char const* argv[])
     auto delta = 0.001;
     for(int i=0; i<60000; ++i)
     {
-        out << i*delta << "," << traj.position_at_time(i*delta) << "\n";
+        auto pva = traj.get_posvelacc(i*delta);
+        out << i*delta << "," << pva[0] << "," << pva[1] << "," << pva[2] << "\n";
     }
     out << std::flush;
 

@@ -35,6 +35,7 @@ add_executable(record src/record.cpp)
 target_link_libraries(record Franka::Franka common Eigen3::Eigen3)
 
 add_executable(trajectory_test src/trajectory_test.cpp src/trajectory.cpp)
+target_link_libraries(trajectory_test Eigen3::Eigen3)
 
 include(GNUInstallDirs)
 install(TARGETS ${EXAMPLES}

@@ -2,12 +2,15 @@
 #define __TRAJECTORU_H__
 
 
+#include <Eigen/Core>
+
+
 class Trajectory
 {
     public:
         Trajectory(double acceleration, double initial_position);
 
-        double position_at_time(double time_point);
+        Eigen::Vector3d get_posvelacc(double time_point);
 
     private:
         double                          m_position;
